@@ -18,7 +18,7 @@
       "sha256": "9850c99ff3f6000d9269ab4750f0382140187d60bed26510041aa162798bac52",
       "parent": null,
       "notes": "Original FIFA ranking CSV (2022-10-06), untouched.",
-      "created_utc": "2026-10-11T09:24:43+00:00"
+      "created_utc": "2026-10-11T11:21:45+00:00"
     },
     {
       "version": "v2.0",
@@ -41,7 +41,7 @@
       "sha256": "7f25f918cda39811b580e1523b0fc5832516d9da64f5505556e268604b4dfee8",
       "parent": "v1.0",
       "notes": "Validated, cleaned, unicode-normalised; tier label + analysis columns added.",
-      "created_utc": "2026-10-11T09:24:43+00:00"
+      "created_utc": "2026-10-11T11:21:45+00:00"
     },
     {
       "version": "v3.0",
@@ -67,7 +67,7 @@
       "sha256": "ec48f168192810c3f1675b05acd5c97a037d09c039ec00f04fa6bbb2ccf5311b",
       "parent": "v2.0",
       "notes": "Engineered: log points/rank, % of leader, confederation mean/z-score/size.",
-      "created_utc": "2026-10-11T09:24:43+00:00"
+      "created_utc": "2026-10-11T11:21:45+00:00"
     }
   ]
 }

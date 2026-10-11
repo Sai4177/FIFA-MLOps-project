@@ -18,3 +18,5 @@ artifacts/
 airflow/
 flows/
 api/
+!metrics.json
+!fifa_tier_model.pkl
