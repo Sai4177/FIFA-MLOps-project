@@ -1,0 +1,44 @@
+name: P6 - FIFA Docker-ready Release
+# Practical-6: release candidate that also contains Dockerfile + .dockerignore.
+# The image is then built MANUALLY on a laptop (see docs/COMMANDS.md, Experiment 5 / P6).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  train-test-deliver:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install dependencies
+        run: pip install -r requirements-cicd.txt
+      - name: Train FIFA tier model
+        run: python train_model.py
+      - name: Check ML quality gate
+        run: python quality_gate.py
+      - name: Run automated tests
+        run: python -m unittest test_ml_pipeline test_app -v
+      - name: Prepare Docker-ready release candidate
+        run: |
+          mkdir -p release_candidate/src
+          cp app.py tier_logic.py fifa_tier_model.pkl metrics.json release_candidate/
+          cp requirements-cicd.txt Dockerfile .dockerignore release_candidate/
+          cp -r src/fifa_mlops release_candidate/src/
+          printf "FIFA Tier Prediction ML Application\nBuild: docker build -t fifa-tier-ml:1.0 .\nRun:   docker run -d --name fifa-tier-ml-container -p 5000:5000 fifa-tier-ml:1.0\nEndpoints: GET /health , POST /predict\n" > release_candidate/DEPLOYMENT.txt
+      - name: Upload release candidate
+        uses: actions/upload-artifact@v7
+        with:
+          name: fifa-tier-ml-release
+          path: release_candidate/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

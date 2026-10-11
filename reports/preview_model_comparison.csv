@@ -1,0 +1,7 @@
+rank,model,accuracy,precision_macro,recall_macro,f1_macro,cv_accuracy_mean,cv_accuracy_std,train_accuracy
+1,RandomForest,0.9767,0.9722,0.9792,0.9744,0.9585,0.0141,1.0
+2,GradientBoosting,0.9767,0.9722,0.9792,0.9744,0.9467,0.0285,1.0
+3,DecisionTree,0.9535,0.9187,0.9479,0.9301,0.9702,0.0186,1.0
+4,LogisticRegression,0.907,0.8949,0.9062,0.8928,0.9349,0.0468,0.9702
+5,SVM,0.8372,0.7948,0.8487,0.8129,0.9107,0.0528,0.9643
+6,KNN,0.8372,0.7956,0.8383,0.7985,0.9109,0.0615,0.9405

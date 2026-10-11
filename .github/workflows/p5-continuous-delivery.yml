@@ -1,0 +1,52 @@
+name: P5 - FIFA ML Continuous Delivery
+# Practical-5: validated model + Flask API packaged as a release candidate
+on:
+  workflow_dispatch:
+    inputs:
+      break_api_test:
+        description: "Flip an expected value in test_app.py to demonstrate delivery being blocked"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  train-test-deliver:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install dependencies
+        run: pip install -r requirements-cicd.txt
+      - name: Train FIFA tier model
+        run: python train_model.py
+      - name: Check ML quality gate
+        run: python quality_gate.py
+      - name: Run automated ML tests
+        run: python -m unittest test_ml_pipeline -v
+      - name: Inject failing API expectation (failure demo only)
+        if: ${{ inputs.break_api_test }}
+        run: sed -i 's/"prediction"], "Elite"/"prediction"], "Developing"/' test_app.py
+      - name: Run prediction application tests
+        run: python -m unittest test_app -v
+      - name: Prepare release candidate
+        run: |
+          mkdir -p release_candidate/src
+          cp app.py tier_logic.py fifa_tier_model.pkl metrics.json release_candidate/
+          cp requirements-cicd.txt release_candidate/requirements.txt
+          cp -r src/fifa_mlops release_candidate/src/
+          printf "FIFA Tier Prediction ML Application\nRun: PYTHONPATH=src python app.py\nEndpoints: GET /health , POST /predict\n" > release_candidate/DEPLOYMENT.txt
+      - name: Upload release candidate
+        uses: actions/upload-artifact@v7
+        with:
+          name: fifa-tier-ml-release
+          path: release_candidate/
+          if-no-files-found: error
+          retention-days: 7

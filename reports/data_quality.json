@@ -1,0 +1,23 @@
+{
+  "rows_in": 211,
+  "nulls_per_column": {
+    "team": 0,
+    "team_code": 0,
+    "association": 0,
+    "rank": 0,
+    "previous_rank": 0,
+    "points": 0,
+    "previous_points": 0
+  },
+  "rows_dropped_missing": 0,
+  "rows_dropped_duplicates": 0,
+  "rank_is_unique": true,
+  "points_iqr_outliers": 0,
+  "rows_out": 211,
+  "tier_counts": {
+    "Developing": 91,
+    "Mid": 60,
+    "Strong": 40,
+    "Elite": 20
+  }
+}

@@ -1,0 +1,26 @@
+name: P2 - FIFA ML CI
+# Practical-2: automated ML training + ML pipeline tests
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  train-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install ML dependencies
+        run: pip install -r requirements-cicd.txt
+      - name: Train FIFA tier model
+        run: python train_model.py
+      - name: Run automated ML tests
+        run: python -m unittest test_ml_pipeline -v

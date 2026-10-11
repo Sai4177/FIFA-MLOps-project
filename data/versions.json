@@ -1,0 +1,73 @@
+{
+  "datasets": [
+    {
+      "version": "v1.0",
+      "stage": "raw",
+      "file": "data/raw/fifa_ranking_2022-10-06.csv",
+      "rows": 211,
+      "columns": 7,
+      "column_names": [
+        "team",
+        "team_code",
+        "association",
+        "rank",
+        "previous_rank",
+        "points",
+        "previous_points"
+      ],
+      "sha256": "9850c99ff3f6000d9269ab4750f0382140187d60bed26510041aa162798bac52",
+      "parent": null,
+      "notes": "Original FIFA ranking CSV (2022-10-06), untouched.",
+      "created_utc": "2026-10-11T09:24:43+00:00"
+    },
+    {
+      "version": "v2.0",
+      "stage": "processed",
+      "file": "data/processed/fifa_processed_v2.csv",
+      "rows": 211,
+      "columns": 10,
+      "column_names": [
+        "team",
+        "team_code",
+        "association",
+        "rank",
+        "previous_rank",
+        "points",
+        "previous_points",
+        "tier",
+        "rank_change",
+        "points_change"
+      ],
+      "sha256": "7f25f918cda39811b580e1523b0fc5832516d9da64f5505556e268604b4dfee8",
+      "parent": "v1.0",
+      "notes": "Validated, cleaned, unicode-normalised; tier label + analysis columns added.",
+      "created_utc": "2026-10-11T09:24:43+00:00"
+    },
+    {
+      "version": "v3.0",
+      "stage": "feature-engineered",
+      "file": "data/features/fifa_features_v3.csv",
+      "rows": 211,
+      "columns": 13,
+      "column_names": [
+        "team",
+        "team_code",
+        "previous_rank",
+        "previous_points",
+        "association",
+        "log_prev_points",
+        "log_prev_rank",
+        "pct_of_leader",
+        "confed_mean_prev_points",
+        "points_vs_confed_mean",
+        "points_z_in_confed",
+        "confed_size",
+        "tier"
+      ],
+      "sha256": "ec48f168192810c3f1675b05acd5c97a037d09c039ec00f04fa6bbb2ccf5311b",
+      "parent": "v2.0",
+      "notes": "Engineered: log points/rank, % of leader, confederation mean/z-score/size.",
+      "created_utc": "2026-10-11T09:24:43+00:00"
+    }
+  ]
+}

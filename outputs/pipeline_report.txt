@@ -1,0 +1,17 @@
+FIFA END-TO-END ML PIPELINE REPORT
+====================================
+Dataset shape        : 211 x 10
+Input features       : 3 raw (+ engineered inside pipeline)
+Training records     : 168
+Testing records      : 43
+Model                : RandomForestClassifier {'n_estimators': 500, 'max_depth': 6, 'max_features': 'sqrt', 'random_state': 42}
+
+accuracy         : 0.9767
+precision_macro  : 0.9722
+recall_macro     : 0.9792
+f1_macro         : 0.9744
+
+Sample team          : {'previous_rank': 139, 'previous_points': 1079.18, 'association': 'CONCACAF'}
+Sample prediction    : Developing
+
+Status               : Completed successfully

@@ -1,0 +1,35 @@
+name: P3 - FIFA ML Quality Gate
+# Practical-3: stop the pipeline when accuracy < threshold
+on:
+  workflow_dispatch:
+    inputs:
+      min_accuracy:
+        description: "Minimum accuracy (use 0.99 to demonstrate a quality-gate failure)"
+        type: string
+        default: "0.85"
+
+permissions:
+  contents: read
+
+jobs:
+  train-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install ML dependencies
+        run: pip install -r requirements-cicd.txt
+      - name: Train FIFA tier model
+        run: python train_model.py
+      - name: Check ML quality gate
+        env:
+          MIN_ACCURACY: ${{ inputs.min_accuracy || '0.85' }}
+        run: python quality_gate.py
+      - name: Run automated ML tests
+        run: python -m unittest test_ml_pipeline -v

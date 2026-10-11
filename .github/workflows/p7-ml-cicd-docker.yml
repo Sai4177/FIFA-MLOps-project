@@ -1,0 +1,94 @@
+name: P7 - FIFA ML CI-CD with Docker
+# Practical-7 (FINAL, complete pipeline): train -> quality gate -> tests -> docker build ->
+# run container -> health + prediction checks -> logs -> cleanup -> upload release candidate
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      wrong_health_port:
+        description: "Use port 5001 for the health check to demonstrate a Docker runtime failure"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+env:
+  HEALTH_PORT: ${{ inputs.wrong_health_port && '5001' || '5000' }}
+
+jobs:
+  train-test-containerize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install dependencies
+        run: pip install -r requirements-cicd.txt
+      - name: Train FIFA tier model
+        run: python train_model.py
+      - name: Check ML quality gate
+        run: python quality_gate.py
+      - name: Run automated tests
+        run: python -m unittest discover -v
+      - name: Build Docker image
+        run: docker build -t fifa-tier-ml:${{ github.sha }} .
+      - name: Start Docker container
+        run: |
+          docker run -d \
+            --name fifa-tier-ml-container \
+            -p 5000:5000 \
+            fifa-tier-ml:${{ github.sha }}
+      - name: Wait for application to become ready
+        run: |
+          for i in {1..15}; do
+            if curl --fail --silent http://localhost:${HEALTH_PORT}/health; then
+              echo
+              echo "Application is ready."
+              exit 0
+            fi
+            echo "Waiting for application... attempt $i"
+            sleep 2
+          done
+          echo "Application did not become ready."
+          docker logs fifa-tier-ml-container
+          exit 1
+      - name: Test prediction endpoint
+        run: |
+          response=$(curl --fail --silent --show-error \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"previous_rank":3,"previous_points":1770.65,"association":"CONMEBOL"}' \
+            http://localhost:5000/predict)
+          echo "Prediction response: $response"
+          echo "$response" | grep -q '"prediction"'
+          echo "$response" | grep -q '"Elite"'
+      - name: Show Docker container logs
+        if: always()
+        run: docker logs fifa-tier-ml-container || true
+      - name: Stop and remove Docker container
+        if: always()
+        run: docker rm -f fifa-tier-ml-container || true
+      - name: Prepare release candidate
+        run: |
+          mkdir -p release_candidate/src
+          cp app.py tier_logic.py fifa_tier_model.pkl metrics.json release_candidate/
+          cp requirements-cicd.txt Dockerfile .dockerignore release_candidate/
+          cp -r src/fifa_mlops release_candidate/src/
+          printf "FIFA Tier Prediction ML Application\nBuild: docker build -t fifa-tier-ml:1.0 .\nRun:   docker run -d -p 5000:5000 fifa-tier-ml:1.0\n" > release_candidate/DEPLOYMENT.txt
+      - name: Upload release candidate
+        uses: actions/upload-artifact@v7
+        with:
+          name: fifa-tier-ml-release
+          path: release_candidate/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

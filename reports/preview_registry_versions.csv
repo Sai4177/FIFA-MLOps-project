@@ -1,0 +1,4 @@
+registry_version,label,hyper_parameters,accuracy,f1_macro,cv_accuracy_mean
+1,baseline,default (see table above),0.9767,0.9744,0.9585
+2,tuned-1,"{'n_estimators': 300, 'max_depth': 10, 'min_samples_leaf': 2}",0.9535,0.9562,0.9585
+3,tuned-2,"{'n_estimators': 500, 'max_depth': 6, 'max_features': 'sqrt'}",0.9767,0.9744,0.9585

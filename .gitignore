@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+mlflow.db
+mlruns/
+mlartifacts/
+release_candidate/
+fifa_tier_model.pkl
+fifa_dataset.csv
+/metrics.json
+.cicd_backup/
+*.log
